@@ -99,68 +99,69 @@ class _urllauncherState extends State<urllauncher> {
       path: phoneNumber,
     );
     await launch(launchUri.toString());
-    }
-    String toLaunch = 'https://www.cylog.org/headers/';
+  }
 
+  String toLaunch = 'https://www.cylog.org/headers/';
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            title: Text("Appbar"),
-            centerTitle: true,
+      appBar: AppBar(
+        title: Text("Appbar"),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                    onChanged: (String text) => _phone = text,
+                    decoration: const InputDecoration(
+                        hintText: 'Input the phone number to launch')),
+              ),
+              ElevatedButton(
+                onPressed: _hasCallSupport
+                    ? () => setState(() {
+                          _launched = _makePhoneCall(_phone);
+                        })
+                    : null,
+                child: _hasCallSupport
+                    ? const Text('Make phone call')
+                    : const Text('Calling not supported'),
+              ),
+              ElevatedButton(
+                onPressed: () => setState(() {
+                  _launched = _launchInBrowser(toLaunch);
+                }),
+                child: Text('Launch in browser'),
+              ),
+              Padding(padding: EdgeInsets.all(16.0)),
+              ElevatedButton(
+                onPressed: () => setState(() {
+                  _launched = _launchInWebViewOrVC(toLaunch);
+                }),
+                child: Text('Launch in app'),
+              ),
+              Link(
+                uri: Uri.parse(
+                    'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
+                target: LinkTarget.blank,
+                builder: (BuildContext ctx, FollowLink? openLink) {
+                  return TextButton.icon(
+                    onPressed: openLink,
+                    label: Text('Link Widget documentation'),
+                    icon: Icon(Icons.read_more),
+                  );
+                },
+              ),
+              FutureBuilder<void>(future: _launched, builder: _launchStatus),
+            ],
           ),
-          body: ListView(
-            children:[ Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextField(
-                      onChanged: (String text) => _phone = text,
-                      decoration: const InputDecoration(
-                          hintText: 'Input the phone number to launch')),
-                ),
-                ElevatedButton(
-                  onPressed: _hasCallSupport
-                      ? () => setState(() {
-                    _launched = _makePhoneCall(_phone);
-                  })
-                      : null,
-                  child: _hasCallSupport
-                      ? const Text('Make phone call')
-                      : const Text('Calling not supported'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    _launched = _launchInBrowser(toLaunch);
-                  }),
-                  child:Text('Launch in browser'),
-                ),
-                Padding(padding: EdgeInsets.all(16.0)),
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    _launched = _launchInWebViewOrVC(toLaunch);
-                  }),
-                  child:Text('Launch in app'),
-                ),
-
-                Link(
-                  uri: Uri.parse(
-                      'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
-                  target: LinkTarget.blank,
-                  builder: (BuildContext ctx, FollowLink? openLink) {
-                    return TextButton.icon(
-                      onPressed: openLink,
-                      label: Text('Link Widget documentation'),
-                      icon: Icon(Icons.read_more),
-                    );
-                  },
-                ),
-                FutureBuilder<void>(future: _launched, builder: _launchStatus),
-              ],
-            ),],
-          ),
-        ));
+        ],
+      ),
+    ));
   }
 }
